@@ -67,8 +67,9 @@ export function SearchPage({ products, onClose, onProductClick, searchQuery, onS
 
   return (
     <div className="absolute inset-0 bg-white z-30 flex flex-col">
+      <div className="w-full max-w-xl mx-auto min-h-screen flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 bg-white z-10 px-5 pt-8 pb-4 border-b border-gray-100">
+      <div className="sticky top-0 bg-white z-10 px-4 sm:px-5 pt-8 pb-4 border-b border-gray-100">
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={onClose}
@@ -129,20 +130,20 @@ export function SearchPage({ products, onClose, onProductClick, searchQuery, onS
       </div>
 
       {/* Results */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto w-full">
         {!searchQuery.trim() ? (
-          <div className="px-5 pt-8 text-center">
+          <div className="px-4 sm:px-5 pt-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
               <Search className="w-8 h-8 text-gray-400" />
             </div>
             <p className="text-gray-500">Start typing to search products</p>
           </div>
         ) : matchedProducts.length > 0 ? (
-          <div className="px-5 pt-4 pb-8">
+          <div className="px-4 sm:px-5 pt-4 pb-8">
             <p className="text-sm text-gray-500 mb-4">
               {matchedProducts.length} {matchedProducts.length === 1 ? 'product' : 'products'} found
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {matchedProducts.map((product, index) => (
                 <ProductCard
                   key={`${product.id}-${product.name}-${index}`}
@@ -159,7 +160,7 @@ export function SearchPage({ products, onClose, onProductClick, searchQuery, onS
             </div>
           </div>
         ) : (
-          <div className="px-5 pt-8 text-center">
+          <div className="px-4 sm:px-5 pt-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
               <Search className="w-8 h-8 text-gray-400" />
             </div>
@@ -167,6 +168,7 @@ export function SearchPage({ products, onClose, onProductClick, searchQuery, onS
             <p className="text-sm text-gray-500">Try searching with different keywords</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

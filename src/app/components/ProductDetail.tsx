@@ -1,4 +1,4 @@
-import { X, ChevronLeft, ShoppingBag } from "lucide-react";
+import { ChevronLeft, ShoppingBag } from "lucide-react";
 import Slider from "react-slick";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { useState, useRef, useEffect } from "react";
@@ -50,11 +50,12 @@ export function ProductDetail({
   });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFloating, setIsFloating] = useState(true);
-  const cartIconRef = useRef<HTMLButtonElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const sliderRef = useRef<Slider>(null);
-  const buttonContainerRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const cartIconRef = useRef<HTMLButtonElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const sliderRef = useRef<Slider | null>(null);
+  const buttonContainerRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const frameClasses = "w-full max-w-2xl mx-auto px-4 sm:px-5 md:px-6";
 
   const handleAddToCart = () => {
     if (buttonRef.current && cartIconRef.current) {
@@ -132,6 +133,13 @@ export function ProductDetail({
     };
   }, []);
 
+  // Ensure view resets to top and first image when product changes
+  useEffect(() => {
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    sliderRef.current?.slickGoTo(0, true);
+    setCurrentSlide(0);
+  }, [productId]);
+
   return (
     <div
       ref={scrollContainerRef}
@@ -168,61 +176,64 @@ export function ProductDetail({
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-transparent z-50 px-6 pt-20 pb-4 flex items-center justify-between max-w-[380px] mx-auto">
-        <button
-          onClick={
-            fromSearch && onBackToSearch
-              ? onBackToSearch
-              : onClose
-          }
-          className="w-10 h-10 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg"
-        >
-          <ChevronLeft className="w-6 h-6 text-gray-900" />
-        </button>
+      <div className={frameClasses}>
+        {/* Header */}
+        <header className="fixed top-0 left-0 right-0 bg-transparent z-50">
+          <div className={`${frameClasses} pt-12 pb-4 flex items-center justify-between`}>
+            <button
+              onClick={
+                fromSearch && onBackToSearch
+                  ? onBackToSearch
+                  : onClose
+              }
+              className="w-10 h-10 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg"
+            >
+              <ChevronLeft className="w-6 h-6 text-gray-900" />
+            </button>
 
-        {/* Cart Icon */}
-        <button
-          ref={cartIconRef}
-          onClick={onOpenCheckout}
-          className="w-10 h-10 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg relative"
-        >
-          <ShoppingBag className="w-5 h-5 text-gray-900" />
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-gray-900 text-white text-[10px] rounded-full flex items-center justify-center">
-              {cartCount}
-            </span>
-          )}
-        </button>
-      </header>
+            {/* Cart Icon */}
+            <button
+              ref={cartIconRef}
+              onClick={onOpenCheckout}
+              className="w-10 h-10 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg relative"
+            >
+              <ShoppingBag className="w-5 h-5 text-gray-900" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-gray-900 text-white text-[10px] rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </header>
 
-      {/* Image Carousel - Full Width */}
-      <div className="w-full h-[65vh] bg-[#F8F8F8] overflow-hidden relative z-10">
-        <Slider
-          {...sliderSettings}
-          ref={sliderRef}
-          afterChange={(index) => setCurrentSlide(index)}
-        >
-          {images.map((image, index) => (
-            <div key={index} className="outline-none">
-              <div className="w-full h-[65vh] overflow-hidden relative">
-                <ImageWithFallback
-                  src={image}
-                  alt={`${name} - Image ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+        {/* Image Carousel - Full Width */}
+        <div className="w-full bg-[#F8F8F8] overflow-hidden relative z-10 px-0">
+          <Slider
+            {...sliderSettings}
+            ref={sliderRef}
+            afterChange={(index) => setCurrentSlide(index)}
+          >
+            {images.map((image, index) => (
+              <div key={index} className="outline-none">
+                <div className="w-full aspect-[3/4] sm:aspect-[4/5] min-h-[22rem] overflow-hidden relative">
+                  <ImageWithFallback
+                    src={image}
+                    alt={`${name} - Image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </Slider>
-      </div>
+            ))}
+          </Slider>
+        </div>
 
-      {/* Product Info */}
-      <div
-        className={`py-6 bg-white rounded-t-3xl -mt-25 relative z-10 min-h-[35vh] max-w-[380px] mx-auto w-full ${
-          relatedProducts.length === 0 ? "pb-32" : ""
-        }`}
-      >
+        {/* Product Info */}
+        <div
+          className={`${frameClasses} py-6 bg-white rounded-t-3xl -mt-25 relative z-10 min-h-[35vh] w-full ${
+            relatedProducts.length === 0 ? "pb-32" : ""
+          }`}
+        >
         {/* Image Indicator - Only show if multiple images */}
         {images.length > 1 && (
           <div className="flex items-center justify-center pt-1 pb-4 px-5">
@@ -241,7 +252,7 @@ export function ProductDetail({
           </div>
         )}
 
-        <div className="mb-4 px-5">
+        <div className="mb-4">
           <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full mb-3">
             {category}
           </span>
@@ -251,7 +262,7 @@ export function ProductDetail({
           <p className="text-2xl text-gray-900">{price}</p>
         </div>
 
-        <div className="mb-6 px-5">
+        <div className="mb-6">
           <h2 className="text-base text-gray-900 mb-2">
             Description
           </h2>
@@ -263,17 +274,15 @@ export function ProductDetail({
         {/* Add to Cart Button */}
         <div
           ref={buttonContainerRef}
-          className={`relative px-5 ${isFloating ? "pb-6" : "pb-0"}`}
+          className={`${frameClasses} relative ${isFloating ? "pb-6" : "pb-0"} ${
+            isFloating ? "fixed bottom-12 left-1/2 -translate-x-1/2 z-40" : ""
+          }`}
         >
           <button
             ref={buttonRef}
-            onClick={isInCart ? undefined : handleAddToCart}
-            disabled={isInCart}
-            className={`py-4 rounded-2xl shadow-lg transition-colors duration-200 ${
-              isFloating
-                ? "fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-[calc(380px-2.5rem)] z-40"
-                : "relative w-full"
-            } ${
+              onClick={isInCart ? undefined : handleAddToCart}
+              disabled={isInCart}
+              className={`py-4 rounded-2xl shadow-lg transition-colors duration-200 w-full ${
               isInCart
                 ? "bg-green-600 text-white cursor-not-allowed"
                 : "bg-gray-900 text-white hover:bg-gray-800"
@@ -285,7 +294,7 @@ export function ProductDetail({
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="pt-6 border-t border-gray-100 px-5">
+          <div className="pt-6 border-t border-gray-100">
             <h2 className="text-lg text-gray-900 mb-4">
               Similar Products
             </h2>
@@ -299,7 +308,7 @@ export function ProductDetail({
                   }}
                   className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all text-left"
                 >
-                  <div className="w-full h-32 bg-gray-100 overflow-hidden">
+                  <div className="w-full aspect-square bg-gray-100 overflow-hidden">
                     <ImageWithFallback
                       src={product.image}
                       alt={product.name}
@@ -324,5 +333,6 @@ export function ProductDetail({
         )}
       </div>
     </div>
+  </div>
   );
 }

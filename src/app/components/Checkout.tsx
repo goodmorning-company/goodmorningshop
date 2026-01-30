@@ -16,8 +16,9 @@ export function Checkout({ cartItems, onClose, onRemoveItem }: CheckoutProps) {
 
   return (
     <div className="absolute inset-0 bg-white z-50 overflow-y-auto scrollbar-hide">
+      <div className="w-full max-w-xl mx-auto min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-20 px-5 py-4 border-b border-gray-100">
+      <header className="sticky top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-20 px-4 sm:px-5 py-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <button
             onClick={onClose}
@@ -30,7 +31,7 @@ export function Checkout({ cartItems, onClose, onRemoveItem }: CheckoutProps) {
       </header>
 
       {/* Cart Content */}
-      <div className="px-5 py-6">
+      <div className="px-4 sm:px-5 py-6 flex-1 w-full">
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -125,6 +126,7 @@ export function Checkout({ cartItems, onClose, onRemoveItem }: CheckoutProps) {
             </button>
           </>
         )}
+      </div>
       </div>
     </div>
   );

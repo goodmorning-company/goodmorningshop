@@ -10,30 +10,31 @@ interface Category {
 
 interface AllCategoriesProps {
   onClose: () => void;
+  onSelectCategory?: (category: string) => void;
 }
 
 const categoryData: Category[] = [
   {
     id: 1,
-    name: 'Women',
+    name: 'Mujer',
     image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21lbiUyMGZhc2hpb24lMjBzdG9yZXxlbnwxfHx8fDE3Mzc5OTIzNjR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     itemCount: 245,
   },
   {
     id: 2,
-    name: 'Men',
+    name: 'Hombre',
     image: 'https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZW4lMjBmYXNoaW9uJTIwc3RvcmV8ZW58MXx8fHwxNzM3OTkyMzY0fDA&ixlib=rb-4.1.0&q=80&w=1080',
     itemCount: 189,
   },
   {
     id: 3,
-    name: 'Accessories',
+    name: 'Accesorios',
     image: 'https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwYWNjZXNzb3JpZXMlMjBzdG9yZXxlbnwxfHx8fDE3Mzc5OTIzNjR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     itemCount: 312,
   },
   {
     id: 4,
-    name: 'Footwear',
+    name: 'Calzado',
     image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaG9lcyUyMHN0b3JlJTIwZGlzcGxheXxlbnwxfHx8fDE3Mzc5OTIzNjR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     itemCount: 156,
   },
@@ -57,17 +58,18 @@ const categoryData: Category[] = [
   },
   {
     id: 8,
-    name: 'New In',
+    name: 'Novedades',
     image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuZXclMjBhcnJpdmFscyUyMGZhc2hpb258ZW58MXx8fHwxNzM3OTkyMzY0fDA&ixlib=rb-4.1.0&q=80&w=1080',
     itemCount: 89,
   },
 ];
 
-export function AllCategories({ onClose }: AllCategoriesProps) {
+export function AllCategories({ onClose, onSelectCategory }: AllCategoriesProps) {
   return (
     <div className="absolute inset-0 bg-white z-50 overflow-y-auto">
+      <div className="w-full max-w-xl mx-auto min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 left-0 right-0 bg-white z-20 px-5 py-4 border-b border-gray-100">
+      <header className="sticky top-0 left-0 right-0 bg-white z-20 px-4 sm:px-5 py-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <button
             onClick={onClose}
@@ -80,12 +82,13 @@ export function AllCategories({ onClose }: AllCategoriesProps) {
       </header>
 
       {/* Categories Grid */}
-      <div className="px-5 py-6">
-        <div className="grid grid-cols-2 gap-4">
+      <div className="px-4 sm:px-5 py-6 flex-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {categoryData.map((category) => (
             <div
               key={category.id}
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => onSelectCategory?.(category.name)}
             >
               <div className="relative h-40 bg-[#F8F8F8] overflow-hidden">
                 <ImageWithFallback
@@ -102,6 +105,7 @@ export function AllCategories({ onClose }: AllCategoriesProps) {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );

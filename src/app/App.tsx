@@ -11,6 +11,18 @@ import { useState, useMemo } from 'react';
 
 const categories = ['Todo', 'Novedades', 'Mujer', 'Hombre', 'Accesorios'];
 
+const categoryAliasMap: Record<string, string> = {
+  Women: 'Mujer',
+  Men: 'Hombre',
+  Accessories: 'Accesorios',
+  Footwear: 'Calzado',
+  Beauty: 'Beauty',
+  Technology: 'Technology',
+  Bags: 'Bags',
+  'New In': 'Novedades',
+  Todo: 'Todo',
+};
+
 const products = [
   // Women (10+ products)
   {
@@ -945,7 +957,7 @@ const topProducts = [
 export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('Todo');
   const [viewingCategory, setViewingCategory] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const [productFromSearch, setProductFromSearch] = useState(false);
@@ -953,6 +965,18 @@ export default function App() {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const [productBeforeCheckout, setProductBeforeCheckout] = useState<any>(null);
+  const [cameFromAllCategories, setCameFromAllCategories] = useState(false);
+
+  const resetToHome = () => {
+    setSelectedProduct(null);
+    setShowAllCategories(false);
+    setViewingCategory(null);
+    setShowSearch(false);
+    setShowCheckout(false);
+    setActiveCategory('Todo');
+    setProductFromSearch(false);
+    setCameFromAllCategories(false);
+  };
 
   // Check if current product is in cart
   const isProductInCart = (productId: number) => {
@@ -1006,7 +1030,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="w-full max-w-[390px] mx-auto h-screen overflow-y-auto scrollbar-hide bg-white relative">
+      <div className="w-full max-w-md md:max-w-lg lg:max-w-xl mx-auto min-h-screen bg-white relative flex flex-col">
           {showCheckout && !selectedProduct && !showAllCategories && !viewingCategory && (
             <Checkout
               cartItems={cartItems}
@@ -1016,7 +1040,9 @@ export default function App() {
                 if (productBeforeCheckout) {
                   setSelectedProduct(productBeforeCheckout);
                   setProductBeforeCheckout(null);
+                  return;
                 }
+                resetToHome();
               }}
               onRemoveItem={handleRemoveFromCart}
             />
@@ -1025,7 +1051,10 @@ export default function App() {
           {showSearch && !showAllCategories && !viewingCategory && !selectedProduct && (
             <SearchPage
               products={[...products, ...topProducts]}
-              onClose={() => setShowSearch(false)}
+              onClose={() => {
+                setShowSearch(false);
+                resetToHome();
+              }}
               onProductClick={(product) => {
                 setShowSearch(false);
                 setSelectedProduct(product);
@@ -1037,14 +1066,40 @@ export default function App() {
           )}
 
           {showAllCategories && (
-            <AllCategories onClose={() => setShowAllCategories(false)} />
+            <AllCategories
+              onClose={() => {
+                setShowAllCategories(false);
+                resetToHome();
+              }}
+              onSelectCategory={(category) => {
+                const targetCategory = categoryAliasMap[category] || category;
+                setActiveCategory(targetCategory);
+                setShowAllCategories(false);
+                setCameFromAllCategories(true);
+                if (targetCategory === 'Todo') {
+                  setViewingCategory(null);
+                  resetToHome();
+                  return;
+                }
+                setViewingCategory(targetCategory);
+              }}
+            />
           )}
 
           {viewingCategory && !showAllCategories && (
             <CategoryPage
               category={viewingCategory}
               products={[...products, ...topProducts]}
-              onClose={() => setViewingCategory(null)}
+              onClose={() => {
+                if (cameFromAllCategories) {
+                  setViewingCategory(null);
+                  setShowAllCategories(true);
+                  setCameFromAllCategories(false);
+                  return;
+                }
+                setViewingCategory(null);
+                resetToHome();
+              }}
               onProductClick={(product) => {
                 setViewingCategory(null);
                 setSelectedProduct(product);
@@ -1061,8 +1116,7 @@ export default function App() {
               category={selectedProduct.category}
               productId={selectedProduct.id}
               onClose={() => {
-                setSelectedProduct(null);
-                setProductFromSearch(false);
+                resetToHome();
               }}
               fromSearch={productFromSearch}
               onBackToSearch={() => {
@@ -1092,7 +1146,7 @@ export default function App() {
           {!selectedProduct && !showAllCategories && !viewingCategory && (
             <>
           {/* Header */}
-          <header className="sticky top-0 bg-white/95 backdrop-blur-md z-20 px-5 pt-8 pb-3 border-b border-gray-100">
+          <header className="sticky top-0 bg-white/95 backdrop-blur-md z-20 px-4 sm:px-5 pt-8 pb-3 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <h1 className="text-xl tracking-tight text-gray-900">Tienda de Abo</h1>
               <div className="flex items-center gap-3">
@@ -1115,7 +1169,7 @@ export default function App() {
           </header>
 
           {/* Categories */}
-          <div className="px-5 pt-4 pb-3 bg-[rgba(255,255,255,0.89)]">
+          <div className="px-4 sm:px-5 pt-4 pb-3 bg-[rgba(255,255,255,0.89)]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg text-gray-900">Categorías</h2>
               <button className="text-sm text-gray-500" onClick={() => setShowAllCategories(true)}>
@@ -1128,6 +1182,10 @@ export default function App() {
                   key={category}
                   onClick={() => {
                     setActiveCategory(category);
+                    if (category === 'Todo') {
+                      setViewingCategory(null);
+                      return;
+                    }
                     setViewingCategory(category);
                   }}
                   className={`px-5 py-2 rounded-full text-sm transition-all whitespace-nowrap ${
@@ -1143,7 +1201,7 @@ export default function App() {
           </div>
 
           {/* Top Products Section */}
-          <div className="px-5 pb-6 pt-2">
+          <div className="px-4 sm:px-5 pb-6 pt-2">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg text-gray-900">Productos Destacados</h2>
               <button className="text-sm text-gray-500">Ver Todo</button>
@@ -1165,7 +1223,7 @@ export default function App() {
           </div>
 
           {/* Filter Bar */}
-          <div className="px-5 pb-4 flex items-center justify-between">
+          <div className="px-4 sm:px-5 pb-4 flex items-center justify-between">
             <p className="text-sm text-gray-500">
               {products.length} Productos
             </p>
@@ -1176,8 +1234,8 @@ export default function App() {
           </div>
 
           {/* Product Grid */}
-          <div className="px-5 pb-8">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="px-4 sm:px-5 pb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
               {products.map((product) => (
                 <ProductCard
                   key={product.id}

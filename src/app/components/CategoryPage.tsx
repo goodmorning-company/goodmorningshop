@@ -25,8 +25,9 @@ export function CategoryPage({ category, products, onClose, onProductClick }: Ca
 
   return (
     <div className="absolute inset-0 bg-white z-50 overflow-y-auto">
+      <div className="w-full max-w-xl mx-auto min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 left-0 right-0 bg-white z-20 px-5 py-4 border-b border-gray-100">
+      <header className="sticky top-0 left-0 right-0 bg-white z-20 px-4 sm:px-5 py-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <button
             onClick={onClose}
@@ -42,8 +43,8 @@ export function CategoryPage({ category, products, onClose, onProductClick }: Ca
       </header>
 
       {/* Products Grid */}
-      <div className="px-5 py-6">
-        <div className="grid grid-cols-2 gap-4">
+      <div className="px-4 sm:px-5 py-6 flex-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {filteredProducts.map((product, index) => (
             <ProductCard
               key={`${product.category}-${product.id}-${index}`}
@@ -61,6 +62,7 @@ export function CategoryPage({ category, products, onClose, onProductClick }: Ca
             <p className="text-gray-500">No products found in this category</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
