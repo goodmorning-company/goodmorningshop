@@ -55,7 +55,9 @@ export function ProductDetail({
   const sliderRef = useRef<Slider | null>(null);
   const buttonContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const frameClasses = "w-full max-w-2xl mx-auto px-4 sm:px-5 md:px-6";
+  // Keep all sections (header, content, CTA) aligned with the app's main container width (same as app shell)
+  const frameClasses = "w-full max-w-md md:max-w-lg lg:max-w-xl mx-auto px-4 sm:px-5 md:px-6";
+  const headerPadding = "px-6 sm:px-8 md:px-10";
 
   const handleAddToCart = () => {
     if (buttonRef.current && cartIconRef.current) {
@@ -179,7 +181,7 @@ export function ProductDetail({
       <div className={frameClasses}>
         {/* Header */}
         <header className="fixed top-0 left-0 right-0 bg-transparent z-50">
-          <div className={`${frameClasses} pt-12 pb-4 flex items-center justify-between`}>
+          <div className={`${frameClasses} ${headerPadding} pt-12 pb-4 flex items-center justify-between`}>
             <button
               onClick={
                 fromSearch && onBackToSearch
@@ -275,14 +277,14 @@ export function ProductDetail({
         <div
           ref={buttonContainerRef}
           className={`${frameClasses} relative ${isFloating ? "pb-6" : "pb-0"} ${
-            isFloating ? "fixed bottom-12 left-1/2 -translate-x-1/2 z-40" : ""
+            isFloating ? "fixed bottom-4 left-1/2 -translate-x-1/2 z-40" : ""
           }`}
         >
           <button
             ref={buttonRef}
               onClick={isInCart ? undefined : handleAddToCart}
               disabled={isInCart}
-              className={`py-4 rounded-2xl shadow-lg transition-colors duration-200 w-full ${
+              className={`py-4 rounded-2xl shadow-lg transition-all duration-200 w-full ${
               isInCart
                 ? "bg-green-600 text-white cursor-not-allowed"
                 : "bg-gray-900 text-white hover:bg-gray-800"
