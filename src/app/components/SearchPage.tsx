@@ -92,6 +92,13 @@ export function SearchPage({ products, onClose, onProductClick, searchQuery, onS
                 onSearchQueryChange(e.target.value);
                 setShowSuggestions(true);
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setShowSuggestions(false);
+                  // Optional: prevent form submission if this input ever sits in a form
+                  e.preventDefault();
+                }
+              }}
               onFocus={() => setShowSuggestions(true)}
               className="flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-500"
               autoFocus
@@ -153,7 +160,7 @@ export function SearchPage({ products, onClose, onProductClick, searchQuery, onS
                   category={product.category}
                   onClick={() => {
                     onProductClick(product);
-                    onClose();
+                    setShowSuggestions(false);
                   }}
                 />
               ))}
