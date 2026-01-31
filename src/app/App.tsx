@@ -966,6 +966,7 @@ export default function App() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [productBeforeCheckout, setProductBeforeCheckout] = useState<any>(null);
   const [cameFromAllCategories, setCameFromAllCategories] = useState(false);
+  const [productHistory, setProductHistory] = useState<{ product: any; fromSearch: boolean }[]>([]);
 
   const resetToHome = () => {
     setSelectedProduct(null);
@@ -976,6 +977,39 @@ export default function App() {
     setActiveCategory('Todo');
     setProductFromSearch(false);
     setCameFromAllCategories(false);
+    setProductHistory([]);
+  };
+
+  // Open a product detail, preserving up to the last 5 visited products
+  const openProduct = (product: any, options?: { fromSearch?: boolean }) => {
+    setProductHistory((prev) => {
+      if (!selectedProduct) return prev;
+      const updated = [{ product: selectedProduct, fromSearch: productFromSearch }, ...prev];
+      return updated.slice(0, 5);
+    });
+
+    setSelectedProduct(product);
+    setProductFromSearch(options?.fromSearch ?? false);
+  };
+
+  const handleBackFromProductDetail = () => {
+    if (productHistory.length > 0) {
+      const [previous, ...rest] = productHistory;
+      setProductHistory(rest);
+      setSelectedProduct(previous.product);
+      setProductFromSearch(previous.fromSearch);
+      return;
+    }
+
+    if (productFromSearch) {
+      setProductHistory([]);
+      setSelectedProduct(null);
+      setProductFromSearch(false);
+      setShowSearch(true);
+      return;
+    }
+
+    resetToHome();
   };
 
   // Check if current product is in cart
@@ -1057,8 +1091,7 @@ export default function App() {
               }}
               onProductClick={(product) => {
                 setShowSearch(false);
-                setSelectedProduct(product);
-                setProductFromSearch(true);
+                openProduct(product, { fromSearch: true });
               }}
               searchQuery={searchQuery}
               onSearchQueryChange={setSearchQuery}
@@ -1102,7 +1135,7 @@ export default function App() {
               }}
               onProductClick={(product) => {
                 setViewingCategory(null);
-                setSelectedProduct(product);
+                openProduct(product);
               }}
             />
           )}
@@ -1115,15 +1148,9 @@ export default function App() {
               description={selectedProduct.description}
               category={selectedProduct.category}
               productId={selectedProduct.id}
-              onClose={() => {
-                resetToHome();
-              }}
+              onClose={handleBackFromProductDetail}
               fromSearch={productFromSearch}
-              onBackToSearch={() => {
-                setSelectedProduct(null);
-                setProductFromSearch(false);
-                setShowSearch(true);
-              }}
+              onBackToSearch={handleBackFromProductDetail}
               onAddToCart={() => {
                 setCartItems([...cartItems, selectedProduct]);
               }}
@@ -1137,8 +1164,7 @@ export default function App() {
               }}
               allProducts={[...products, ...topProducts]}
               onProductClick={(product) => {
-                setSelectedProduct(product);
-                setProductFromSearch(false);
+                openProduct(product);
               }}
             />
           )}
@@ -1215,7 +1241,7 @@ export default function App() {
                     price={product.price}
                     rating={product.rating}
                     reviews={product.reviews}
-                    onClick={() => setSelectedProduct(product)}
+                    onClick={() => openProduct(product)}
                   />
                 </div>
               ))}
@@ -1243,7 +1269,7 @@ export default function App() {
                   name={product.name}
                   price={product.price}
                   category={product.category}
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => openProduct(product)}
                 />
               ))}
             </div>

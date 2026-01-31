@@ -212,6 +212,7 @@ export function ProductDetail({
         {/* Image Carousel - Full Width */}
         <div className="w-full bg-[#F8F8F8] overflow-hidden relative z-10 px-0">
           <Slider
+            key={productId} // force slick to rebuild when product changes so images refresh
             {...sliderSettings}
             ref={sliderRef}
             afterChange={(index) => setCurrentSlide(index)}
